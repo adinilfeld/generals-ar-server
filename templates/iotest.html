@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket Test</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            socket.on('connect', function() {
+                console.log('Websocket connected!');
+                socket.emit('message', 'Hello from Client!');
+            });
+
+            socket.on('after connect', function(msg) {
+                console.log('After connect', msg);
+            });
+
+            socket.on('message', function(msg) {
+                console.log('Message received', msg);
+                var messages = document.getElementById('messages');
+                messages.innerHTML += '<li>' + msg + '</li>';
+            });
+
+            // Example of sending a message to the server upon a button click
+            document.getElementById('sendButton').onclick = function() {
+                var input = document.getElementById('messageInput');
+                socket.emit('message', input.value);
+                input.value = '';
+            };
+        });
+    </script>
+</head>
+<body>
+    <h2>Flask-SocketIO Test Client</h2>
+    <ul id="messages"></ul>
+    <input id="messageInput" type="text" />
+    <button id="sendButton">Send</button>
+</body>
+</html>
