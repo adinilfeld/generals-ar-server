@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://127.0.0.1:8000/ws");
+var ws = new WebSocket("ws://10.150.83.102:7648/ws");
 ws.onmessage = function(event) {
     console.log("Received:", event.data);
 };
