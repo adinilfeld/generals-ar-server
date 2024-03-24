@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 from game.game import Game
 from game.board import Move, Board
@@ -71,6 +71,8 @@ async def get_boardstate(playerid:int):
             game.playerids[playerid] = game.p1
         elif len(game.playerids) == 1:
             game.playerids[playerid] = game.p2
+        else:
+            raise HTTPException(status_code=400, detail="Game is full")
     # Serialize the board state for the player
     serialized_board = serialize_board(game.board, playerid)
     reply = GetReply(board=serialized_board,
