@@ -1,10 +1,10 @@
 import random
 
 
-KING = "K"
-CITY = "H"
+KING = "♛"
+CITY = "⌂"
 NEUTRAL = "-"
-MOUNTAIN = "M"
+MOUNTAIN = "⛰"
 DIRECTIONS = {
     "up": (-1, 0),
     "down": (1, 0),
@@ -182,6 +182,6 @@ class Board:
         for r in range(self.M):
             for c in range(self.N):
                 if self.board[r][c].type == NEUTRAL and self.board[r][c].owner is not None:
-                    print(self.board[r][c].owner, end="")
-                print(self.board[r][c].type, end="")
+                    print(self.board[r][c].owner, end=" ")
+                print(self.board[r][c].type, end=" ")
             print("\n")
