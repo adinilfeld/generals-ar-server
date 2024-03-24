@@ -21,13 +21,12 @@ app = FastAPI()
 
 
 class GetReply(BaseModel):
-    # board: List[List[Tuple[int, str, int, bool]]] # 2D list of (owner, type, troops, visible)
+    # board: List[List[Tuple[int, str, int]]] # 2D list of (owner, type, troops)
     board: List[List[Tuple[int, str, int]]]
     land: int # Number of tiles owned by player
     army: int # Number of troops owned by player
 
 class GetReplyFlat(BaseModel):
-    # board: List[List[Tuple[int, str, int, bool]]] # 2D list of (owner, type, troops, visible)
     board: List[int|str]
     land: int # Number of tiles owned by player
     army: int # Number of troops owned by player
@@ -39,8 +38,6 @@ class PostArgs(BaseModel):
 
 @app.middleware("http")
 async def log_requests(request:Request, call_next:callable) -> None:
-    # print(request.headers)
-    # print(await request.body())
     response = await call_next(request)
     return response
 
@@ -64,14 +61,15 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]
             type = tile.type
             troops = tile.troops or 0
             visible = tile.p1_visible if player.player == 1 else tile.p2_visible
-            # visible = True
+            # Visible = True
             if not visible:
                 owner = -1
-                # if type == NEUTRAL: 
+                # If type == NEUTRAL: 
                 troops = 0
             next_row.append((owner, type, troops))
         ret.append(next_row)
     return ret
+
 
 def flatten(board: List[List[Tuple[int, str, int]]]) -> List[int|str|int]:
     out = []
@@ -80,8 +78,8 @@ def flatten(board: List[List[Tuple[int, str, int]]]) -> List[int|str|int]:
             out.append(square[0])
             out.append(square[1])
             out.append(square[2])
-
     return out
+
 
 @app.get("/board/")
 async def get_boardstate(playerid:int):
@@ -94,10 +92,6 @@ async def get_boardstate(playerid:int):
         else:
             raise HTTPException(status_code=400, detail="Game is full")
     # Serialize the board state for the player
-    # serialized_board = serialize_board(game.board, playerid)
-    # reply = GetReply(board=serialized_board,
-    #                  land=game.playerids[playerid].land,
-    #                  army=game.playerids[playerid].army)
     print("HTTP SERVER NUM TROOPS", game.p1.army)
     serialized_board = flatten(serialize_board(game.board, playerid))
     reply = GetReplyFlat(board=serialized_board,
