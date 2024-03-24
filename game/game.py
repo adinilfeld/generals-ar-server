@@ -40,10 +40,13 @@ class Game:
                 if len(player.moves) > 0:
                     print("MAKING MOVE")
                     move = player.moves.popleft()
+                    print(move)
                     result = self.board.move(move)
                     if not result.valid:
+                        print("MOVE INVALID")
                         player.moves.clear()
                     if result.gained_land:
+                        print("MOVE GAINED LAND")
                         player.land += 1
                     if result.won:
                         print(f"Player {player.id} won!")

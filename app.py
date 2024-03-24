@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 from game.game import Game
-from game.board import Move, Board
+from game.board import NEUTRAL, Move, Board
 from typing import List, Tuple
 from threading import Thread
 
@@ -15,7 +15,6 @@ DIRECTIONS = {
 
 
 game = Game(1)
-game.update()
 gamethread = Thread(target = game.update)
 gamethread.start()
 app = FastAPI()
@@ -65,8 +64,11 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]
             type = tile.type
             troops = tile.troops or 0
             visible = tile.p1_visible if player.player == 1 else tile.p2_visible
+            # visible = True
             if not visible:
                 owner = -1
+                if type == NEUTRAL: 
+                    troops = 0
             next_row.append((owner, type, troops))
         ret.append(next_row)
     return ret
@@ -112,10 +114,11 @@ async def add_moves(args:PostArgs):
     moves = []
     player = game.playerids[args.playerid].player
     for r1, c1, r2, c2 in args.moves:
-        dr = r2 - r1
-        dc = c2 - c1
+        print("MOVE COORDS", (r1,c1,r2,c2))
+        dr = -(r2 - r1)
+        dc = -(c2 - c1)
         direction = DIRECTIONS[(dr, dc)]
-        moves.append(Move(player, direction, r1, c1))
+        moves.append(Move(player, direction, r2, c2))
     if player == 1:
         print("ADDING MOVES")
         game.p1.moves.extend(moves)

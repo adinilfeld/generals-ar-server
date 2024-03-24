@@ -118,13 +118,17 @@ class Board:
 
     # Increment the troops of all cities
     def increment_troops(self, all:bool=False) -> Tuple[int, int]:
+        print("INCREMENT")
         p1_increment = 0
         p2_increment = 0
         conquered = self.conquered_cities
-        if all:
+        if True or all:
             conquered += self.conquered_land
         for city in conquered:
             r, c = city
+            if self.board[r][c].type == NEUTRAL and not all:
+                continue
+
             self.board[r][c].troops += 1
             if self.board[r][c].owner == 1:
                 p1_increment += 1
@@ -135,6 +139,7 @@ class Board:
 
     # Checks if a move is valid at the time of execution
     def check_valid_move(self, move:Move) -> bool:
+        return True
         r, c = move.tile
         # Current tile does not belong to player
         if self.board[r][c].owner != move.player:
@@ -173,8 +178,8 @@ class Board:
         c += dc
 
         # Mountain
-        if self.board[r][c].type == MOUNTAIN:
-            return result
+        # if self.board[r][c].type == MOUNTAIN:
+        #     return result
         
         # Keep track of move status
         valid = True
@@ -182,23 +187,30 @@ class Board:
         won = False
 
         # If already occupied by yourself
+        print("PLAYER", move.player, "OWNER", self.board[r][c].owner)
         if self.board[r][c].owner == move.player:
+            print("ALREADY OWNED")
             self.board[r][c].troops += troops_to_move
 
         # If occupied by an opponent
         elif self.board[r][c].owner is not None:
+            print("A")
             # Opponent has more troops
             if self.board[r][c].troops > troops_to_move:
+                print("AA")
                 self.board[r][c].troops -= troops_to_move
             # Opponent has less troops
             elif self.board[r][c].troops < troops_to_move:
+                print("AB")
                 self.board[r][c].owner = move.player
+                print(self.board[r][c].owner)
                 self.board[r][c].troops = troops_to_move - self.board[r][c].troops
                 self.make_visible(move.player, r, c)
                 self.make_invisible(3 - move.player, r, c)
                 gained_land = True
             # Equal troops, nothing happends
             else:
+                print("AC")
                 valid = False
             # If captured opponent king, game over
             if gained_land and self.board[r][c].type == KING:
@@ -206,16 +218,20 @@ class Board:
             
         # If unoccupied
         else:
+            print("B")
             # Neutral land
             if self.board[r][c].type == NEUTRAL:
+                print("BA")
                 self.board[r][c].owner = move.player
                 self.board[r][c].troops = troops_to_move
                 gained_land = True
                 self.conquered_land.append((r, c))
                 self.make_visible(move.player, r, c)
+                print("player: move.player")
 
             # City
             elif self.board[r][c].type == CITY:
+                print("BB")
                 if troops_to_move > self.board[r][c].troops:
                     self.board[r][c].owner = move.player
                     self.board[r][c].troops = troops_to_move - self.board[r][c].troops
