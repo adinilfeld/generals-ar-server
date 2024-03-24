@@ -4,11 +4,11 @@ from .board import Board
 
 
 class Game:
-    def __init__(self, timestep): 
+    def __init__(self, timestep:int): 
         self.timestep = timestep
         self.p1 = Player(1)
         self.p2 = Player(2)
-        self.board = Board(10, 10, 2) # 10x10 board, 2 players
+        self.board = Board(10, 10) # 10x10 board
         self.turn = 0
         self.round = 0
 
@@ -22,14 +22,12 @@ class Game:
     def update(self):
         while True:
             time.sleep(self.timestep)
-            self.turn += 1
+            # Every turn, increment city troops
             # Every 25 turns, increment the round (all troops)
-            if self.turn % 25 == 0:
-                self.round += 1
-                self.board.increment_all_troops()
-            # Otherwise only increment city troops
-            else:
-                self.board.increment_city_troops()
+            self.turn += 1
+            p1_increment, p2_increment = self.board.increment_troops((self.turn % 25 == 0))
+            self.p1.troops += p1_increment
+            self.p2.troops += p2_increment
             
             # Randomize who goes first
             # Ensures fairness if both players want to take an empty tile with the same number of troops
@@ -43,10 +41,12 @@ class Game:
                         player.moves.clear()
                     if result.gained_land:
                         player.land += 1
-                        print(f"{player.id} gained land! Land count: {player.land}")
                     if result.won:
                         print(f"Player {player.id} won!")
                         return
+            print(f"Turn {self.turn} completed")
+            print(f"Player 1: {self.p1.land} land, {self.p1.troops} troops")
+            print(f"Player 2: {self.p2.land} land, {self.p2.troops} troops")
 
 
 if __name__ == "__main__":
