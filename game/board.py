@@ -71,7 +71,6 @@ class Board:
                 rand = random.uniform(0, 1)
                 if (r, c) in self.kings:
                     next_row.append(Tile(player, KING))
-                    self.make_visible(player, r, c)
                     player += 1
                 elif rand < 0.05:
                     next_row.append(Tile(None, CITY))
@@ -80,10 +79,14 @@ class Board:
                 else:
                     next_row.append(Tile(None, NEUTRAL))
             self.board.append(next_row)
-    
+        
+        for r, c in kings:
+            self.make_visible(self.board[r][c].owner, r, c)
+
 
     # Make all adjacent tiles visible
     def make_visible(self, player:int, r:int, c:int):
+        self.print()
         # loop through all 8 directions
         for dr, dc in ADJACENT:
             nr, nc = r + dr, c + dc
