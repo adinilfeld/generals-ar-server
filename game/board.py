@@ -18,7 +18,7 @@ ADJACENT = [(-1,-1), (-1,0), (-1,1),
 
 
 class Tile:
-    def __init__(self, owner:int, type:str, p1_visible:bool=False, p2_visible:bool=False):
+    def __init__(self, owner:int, type:str):
         self.owner = owner
         self.type = type
         self.p1_visible = False
