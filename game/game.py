@@ -1,6 +1,6 @@
 import time, random
-from player import Player
-from board import Board
+from .player import Player
+from .board import Board
 
 
 class Game:
@@ -50,5 +50,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game()
+    game = Game(1)
     game.start()

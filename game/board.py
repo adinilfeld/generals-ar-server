@@ -14,7 +14,7 @@ DIRECTIONS = {
 
 
 class Tile:
-    def __init__(self, owner, type):
+    def __init__(self, owner: int, type):
         self.owner = owner
         self.type = type
         self.troops = 0
