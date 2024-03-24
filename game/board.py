@@ -133,22 +133,31 @@ class Board:
         return p1_increment, p2_increment
 
 
-    # Frontend will check if the move is "technically" valid
-    # i.e. within the board, not a mountain, only selecting your own troops
-    # check_valid_move checks if a move is valid at the time of execution
+    # Checks if a move is valid at the time of execution
     def check_valid_move(self, move:Move) -> bool:
         r, c = move.tile
-        # Check if tile belongs to an opponent
+        # Current tile does not belong to player
         if self.board[r][c].owner != move.player:
             return False
-        # Check if tile has at least two troops
+        # Current tile has less than two troops
         if self.board[r][c].troops <= 1:
             return False
+        
+        dr, dc = DIRECTIONS[move.direction]
+        r += dr
+        c += dc
+        # Next tile out of bounds
+        if not (0 <= r < self.M and 0 <= c < self.N):
+            return False
+        # Next tile is mountain
+        if self.board[r][c].type == MOUNTAIN:
+            return False
+        
         return True
 
 
     # Move a player in a direction
-    def move(self, move:Move):
+    def move(self, move:Move) -> MoveResult:
         r, c = move.tile
         result = MoveResult()
         if not self.check_valid_move(move):

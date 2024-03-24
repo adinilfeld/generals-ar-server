@@ -1,7 +1,7 @@
 from collections import deque
 
-class Player: 
 
+class Player: 
     def __init__(self, player:int):
         self.player = player
         self.land = 1

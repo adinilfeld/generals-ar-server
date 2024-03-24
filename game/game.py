@@ -15,6 +15,7 @@ class Game:
 
 
     def start(self):
+        self.update()
         return
     
 
