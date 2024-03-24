@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from game.board import Board
 from game.game import Game
@@ -10,16 +10,25 @@ game = Game(1)
 app = FastAPI()
 
 # Define a Pydantic model for the item
+class GetBoardArgs(BaseModel):
+    playerid: int
+
 class SBoard(BaseModel):
     board: List[List[Tuple[int, str, int]]] # 2D list of (owner, type, troops)
 
 class SMoves(BaseModel):
-    moves: Tuple[int, int, int, int]
+    moves: List[Tuple[int, int, int, int]]
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(request.headers)
+    print(await request.body())
+    response = await call_next(request)
+    return response
 
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
-
 
 def serialize_board(board):
     b = board.board
@@ -36,14 +45,12 @@ def serialize_board(board):
         ret.append(next_row)
     return ret
 
-
-@app.get("/board")
-async def get_boardstate():
+@app.get("/board/")
+async def get_boardstate(playerid: int):
     serialized_board = serialize_board(game.board)
     return SBoard(board=serialized_board)
 
-@app.post("/move")
-async def update_item(moves: SMoves):
-    # Make the move
-    
-    print(moves)
+@app.post("/move/")
+async def update_item(smoves: SMoves):
+    m = smoves.moves
+    print(m)
