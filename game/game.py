@@ -22,6 +22,7 @@ class Game:
     # Every turn, first increment troops
     # Then pop the player moves and update the board
     def update(self):
+        print("UPDATE")
         while True:
             time.sleep(self.timestep)
             # Every turn, increment city troops
@@ -37,6 +38,7 @@ class Game:
             random.shuffle(players)
             for player in players:
                 if len(player.moves) > 0:
+                    print("MAKING MOVE")
                     move = player.moves.popleft()
                     result = self.board.move(move)
                     if not result.valid:
@@ -46,6 +48,8 @@ class Game:
                     if result.won:
                         print(f"Player {player.id} won!")
                         return
+                else:
+                    print("NO MOVE")
             print(f"Turn {self.turn} completed")
             print(f"Player 1: {self.p1.land} land, {self.p1.army} troops")
             print(f"Player 2: {self.p2.land} land, {self.p2.army} troops")

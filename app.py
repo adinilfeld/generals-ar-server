@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from game.game import Game
 from game.board import Move, Board
 from typing import List, Tuple
+from threading import Thread
 
 
 DIRECTIONS = {
@@ -14,6 +15,9 @@ DIRECTIONS = {
 
 
 game = Game(1)
+game.update()
+gamethread = Thread(target = game.update)
+gamethread.start()
 app = FastAPI()
 
 
@@ -23,6 +27,11 @@ class GetReply(BaseModel):
     land: int # Number of tiles owned by player
     army: int # Number of troops owned by player
 
+class GetReplyFlat(BaseModel):
+    # board: List[List[Tuple[int, str, int, bool]]] # 2D list of (owner, type, troops, visible)
+    board: List[int|str]
+    land: int # Number of tiles owned by player
+    army: int # Number of troops owned by player
 
 class PostArgs(BaseModel):
     moves: List[Tuple[int, int, int, int]] # List of (r1, c1, r2, c2)
@@ -31,8 +40,8 @@ class PostArgs(BaseModel):
 
 @app.middleware("http")
 async def log_requests(request:Request, call_next:callable) -> None:
-    print(request.headers)
-    print(await request.body())
+    # print(request.headers)
+    # print(await request.body())
     response = await call_next(request)
     return response
 
@@ -62,6 +71,15 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]
         ret.append(next_row)
     return ret
 
+def flatten(board: List[List[Tuple[int, str, int]]]) -> List[int|str|int]:
+    out = []
+    for row in board:
+        for square in row:
+            out.append(square[0])
+            out.append(square[1])
+            out.append(square[2])
+
+    return out
 
 @app.get("/board/")
 async def get_boardstate(playerid:int):
@@ -74,8 +92,13 @@ async def get_boardstate(playerid:int):
         else:
             raise HTTPException(status_code=400, detail="Game is full")
     # Serialize the board state for the player
-    serialized_board = serialize_board(game.board, playerid)
-    reply = GetReply(board=serialized_board,
+    # serialized_board = serialize_board(game.board, playerid)
+    # reply = GetReply(board=serialized_board,
+    #                  land=game.playerids[playerid].land,
+    #                  army=game.playerids[playerid].army)
+    print("HTTP SERVER NUM TROOPS", game.p1.army)
+    serialized_board = flatten(serialize_board(game.board, playerid))
+    reply = GetReplyFlat(board=serialized_board,
                      land=game.playerids[playerid].land,
                      army=game.playerids[playerid].army)
     return reply
@@ -83,6 +106,9 @@ async def get_boardstate(playerid:int):
 
 @app.post("/move/")
 async def add_moves(args:PostArgs):
+    print("HERE HERE HERE")
+    print("HERE HERE HERE")
+    print("HERE HERE HERE")
     moves = []
     player = game.playerids[args.playerid].player
     for r1, c1, r2, c2 in args.moves:
@@ -91,6 +117,8 @@ async def add_moves(args:PostArgs):
         direction = DIRECTIONS[(dr, dc)]
         moves.append(Move(player, direction, r1, c1))
     if player == 1:
+        print("ADDING MOVES")
         game.p1.moves.extend(moves)
     else:
+        print("ADDING MOVES")
         game.p2.moves.extend(moves)
