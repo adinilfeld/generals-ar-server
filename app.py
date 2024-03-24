@@ -1,9 +1,17 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from game.game import Game
-from game.board import Move, Board, DIRECTIONS
+from game.board import Move, Board
 from game.player import Player
 from typing import List, Tuple
+
+
+DIRECTIONS = {
+    (-1, 0): "up",
+    (1, 0): "down",
+    (0, -1): "left",
+    (0, 1): "right"
+}
 
 
 game = Game(1)
@@ -70,9 +78,14 @@ async def get_boardstate(playerid:int):
 
 @app.post("/move/")
 async def add_moves(args:PostArgs):
-    pass
-    # moves = []
-    # for r1, c1, r2, c2 in args.moves:
-
-    #     game.p1.moves.append(Move(1, ))
-    # game.p1.moves.extend(m)
+    moves = []
+    player = game.playerids[args.playerid].player
+    for r1, c1, r2, c2 in args.moves:
+        dr = r2 - r1
+        dc = c2 - c1
+        direction = DIRECTIONS[(dr, dc)]
+        moves.append(Move(player, direction, r1, c1))
+    if player == 1:
+        game.p1.moves.extend(moves)
+    else:
+        game.p2.moves.extend(moves)
