@@ -9,14 +9,11 @@ from typing import List, Dict, Tuple
 game = Game(1)
 app = FastAPI()
 
-# Define a Pydantic model for the item
-class GetBoardArgs(BaseModel):
-    playerid: int
 
-class SBoard(BaseModel):
+class SerBoard(BaseModel):
     board: List[List[Tuple[int, str, int]]] # 2D list of (owner, type, troops)
 
-class SMoves(BaseModel):
+class PostArgs(BaseModel):
     moves: List[Tuple[int, int, int, int]]
 
 @app.middleware("http")
@@ -48,9 +45,9 @@ def serialize_board(board):
 @app.get("/board/")
 async def get_boardstate(playerid: int):
     serialized_board = serialize_board(game.board)
-    return SBoard(board=serialized_board)
+    return SerBoard(board=serialized_board)
 
 @app.post("/move/")
-async def update_item(smoves: SMoves):
+async def update_item(smoves: PostArgs):
     m = smoves.moves
     print(m)
