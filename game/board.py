@@ -166,7 +166,8 @@ class Board:
                     self.board[r][c].troops = troops_to_move - self.board[r][c].troops
                     gained_land = True
                     self.conquered_cities.append((r, c))
-                else: # Right now, only allow capture if you move all troops at once
+                else: 
+                    self.board[r][c].troops -= troops_to_move
                     valid = False
 
         # Return move result
