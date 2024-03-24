@@ -86,8 +86,6 @@ class Board:
 
     # Make all adjacent tiles visible
     def make_visible(self, player:int, r:int, c:int):
-        self.print()
-        # loop through all 8 directions
         for dr, dc in ADJACENT:
             nr, nc = r + dr, c + dc
             if 0 <= nr < self.M and 0 <= nc < self.N:

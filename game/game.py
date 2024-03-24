@@ -8,6 +8,7 @@ class Game:
         self.timestep = timestep
         self.p1 = Player(1)
         self.p2 = Player(2)
+        self.playerids = {}
         self.board = Board(10, 10) # 10x10 board
         self.turn = 0
         self.round = 0
@@ -26,8 +27,8 @@ class Game:
             # Every 25 turns, increment the round (all troops)
             self.turn += 1
             p1_increment, p2_increment = self.board.increment_troops((self.turn % 25 == 0))
-            self.p1.troops += p1_increment
-            self.p2.troops += p2_increment
+            self.p1.army += p1_increment
+            self.p2.army += p2_increment
             
             # Randomize who goes first
             # Ensures fairness if both players want to take an empty tile with the same number of troops
@@ -45,8 +46,8 @@ class Game:
                         print(f"Player {player.id} won!")
                         return
             print(f"Turn {self.turn} completed")
-            print(f"Player 1: {self.p1.land} land, {self.p1.troops} troops")
-            print(f"Player 2: {self.p2.land} land, {self.p2.troops} troops")
+            print(f"Player 1: {self.p1.land} land, {self.p1.army} troops")
+            print(f"Player 2: {self.p2.land} land, {self.p2.army} troops")
 
 
 if __name__ == "__main__":
