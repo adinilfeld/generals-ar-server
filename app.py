@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from game.game import Game
 from game.board import Move, Board
-from game.player import Player
 from typing import List, Tuple
 
 
@@ -19,7 +18,8 @@ app = FastAPI()
 
 
 class GetReply(BaseModel):
-    board: List[List[Tuple[int, str, int, bool]]] # 2D list of (owner, type, troops, visible)
+    # board: List[List[Tuple[int, str, int, bool]]] # 2D list of (owner, type, troops, visible)
+    board: List[List[Tuple[int, str, int]]]
     land: int # Number of tiles owned by player
     army: int # Number of troops owned by player
 
@@ -42,8 +42,9 @@ async def read_root() -> dict:
     return {"Hello": "World"}
 
 
-def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int, bool]]]:
+def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]]]:
     b = board.board
+    print(game.playerids)
     player = game.playerids[playerid]
     M, N = len(b), len(b[0])
     ret = []
@@ -55,7 +56,9 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int,
             type = tile.type
             troops = tile.troops or 0
             visible = tile.p1_visible if player.player == 1 else tile.p2_visible
-            next_row.append((owner, type, troops, visible))
+            if not visible:
+                owner = -1
+            next_row.append((owner, type, troops))
         ret.append(next_row)
     return ret
 
