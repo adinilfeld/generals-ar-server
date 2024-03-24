@@ -28,7 +28,7 @@ class Game:
             # Every turn, increment city troops
             # Every 25 turns, increment the round (all troops)
             self.turn += 1
-            p1_increment, p2_increment = self.board.increment_troops((self.turn % 25 == 0))
+            p1_increment, p2_increment = self.board.increment_troops((self.turn % 25) == 0)
             self.p1.army += p1_increment
             self.p2.army += p2_increment
             

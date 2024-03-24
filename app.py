@@ -67,8 +67,8 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]
             # visible = True
             if not visible:
                 owner = -1
-                if type == NEUTRAL: 
-                    troops = 0
+                # if type == NEUTRAL: 
+                troops = 0
             next_row.append((owner, type, troops))
         ret.append(next_row)
     return ret

@@ -124,6 +124,9 @@ class Board:
         conquered = self.conquered_cities
         if True or all:
             conquered += self.conquered_land
+        print(conquered)
+        conquered = list(set(conquered))
+        print(conquered)
         for city in conquered:
             r, c = city
             if self.board[r][c].type == NEUTRAL and not all:
@@ -225,7 +228,8 @@ class Board:
                 self.board[r][c].owner = move.player
                 self.board[r][c].troops = troops_to_move
                 gained_land = True
-                self.conquered_land.append((r, c))
+                if (r,c) not in self.conquered_land:
+                    self.conquered_land.append((r, c))
                 self.make_visible(move.player, r, c)
                 print("player: move.player")
 
@@ -236,7 +240,8 @@ class Board:
                     self.board[r][c].owner = move.player
                     self.board[r][c].troops = troops_to_move - self.board[r][c].troops
                     gained_land = True
-                    self.conquered_cities.append((r, c))
+                    if (r,c) not in self.conquered_cities:
+                        self.conquered_cities.append((r, c))
                     self.make_visible(move.player, r, c)
                 else: 
                     self.board[r][c].troops -= troops_to_move
