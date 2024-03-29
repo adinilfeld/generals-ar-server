@@ -27,7 +27,7 @@ class GetReply(BaseModel):
     army: int # Number of troops owned by player
 
 class GetReplyFlat(BaseModel):
-    board: List[int|str]
+    board: List
     land: int # Number of tiles owned by player
     army: int # Number of troops owned by player
 
@@ -71,7 +71,7 @@ def serialize_board(board:Board, playerid:int) -> List[List[Tuple[int, str, int]
     return ret
 
 
-def flatten(board: List[List[Tuple[int, str, int]]]) -> List[int|str|int]:
+def flatten(board: List[List[Tuple[int, str, int]]]):
     out = []
     for row in board:
         for square in row:
